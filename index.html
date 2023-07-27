@@ -96,14 +96,53 @@
       tfoot tr:first-child th {
         border-top-width: 1px;
       }
-      #page-header {
-        text-align: center;
-      }
       section {
         max-width: 500px;
         margin: auto;
       }
+      section section {
+        margin-left: 20px;
+      }
+      section section section {
+        margin-left: 40px;
+      }
       section + section {
+        margin-top: 50px;
+      }
+      section section + section {
+        margin-top: 30px;
+      }
+      section section section + section {
+        margin-top: 10px;
+      }
+      section p,
+      section ul,
+      section ol,
+      section input,
+      section textarea {
+        margin-left: 30px;
+      }
+      h1 {
+        font-size: 26px;
+      }
+      h2 {
+        font-size: 20px;
+      }
+      h3 {
+        font-size: 16px;
+      }
+      ul,
+      ol {
+        padding-left: 1.5em;
+      }
+      #page-header {
+        padding-top: 26px;
+        text-align: center;
+      }
+      #page-main {
+        margin-top: 45px;
+      }
+      #page-footer {
         margin-top: 50px;
       }
       #container {
@@ -113,18 +152,18 @@
       #page-footer {
         text-align: center;
       }
-      .area-separator {
-        max-width: 400px;
-        margin: auto;
-      }
       #textarea {
         display: block;
         width: 100%;
         height: 200px;
         max-width: 400px;
-        margin: 30px auto;
         padding: 10px;
         box-sizing: border-box;
+      }
+      #table-stage {
+        min-height: 200px;
+        padding: 15px;
+        border: 1px solid var(--dark-1)
       }
       .file-name {
         text-align: left;
@@ -250,25 +289,49 @@
       <header id="page-header">
         <h1 id="page-title">ネット小説の文字数カウンター</h1>
       </header>
-      <main>
-        <section id="description">
-          <ul>
-            <li>テキストファイルのみ読み込むことができます</li>
-            <li>ボタンからファイルを選んで読み込ませることができます</li>
-            <li>ファイルをドロップすることで読み込ませることができます</li>
-            <li>ファイルを読み込ませる際には複数のファイルを扱うことができます</li>
-            <li>テキストボックスに文章をペーストすることで読み込ませられます</li>
-          </ul>
-        </section>
+      <main id="page-main">
         <section id="input-area">
-          <div class="area-separator">
+          <h2>入力</h2>
+          <section>
+            <h3>[ 方法 1 ] ファイルを選択</h3>
             <input id="input" type="file" multiple>
-          </div>
-          <div class="area-separator">
+          </section>
+          <section>
+            <h3>[ 方法 2 ] ファイルをドロップ</h3>
+            <p>画面上にファイルをドロップしてください。</p>
+          </section>
+          <section>
+            <h3>[ 方法 3 ] 文章をペースト</h3>
             <textarea id="textarea"></textarea>
-          </div>
+          </section>
         </section>
-        <section id="table-stage">
+        <section>
+          <h2>出力</h2>
+          <div id="table-stage"></div>
+        </section>
+        <section id="description">
+          <h2>解説</h2>
+          <section>
+            <h3>ファイルの読み込み</h3>
+            <ul>
+              <li>テキストファイルのみ読み込むことができます</li>
+              <li>ボタンからファイルを選んで読み込ませることができます</li>
+              <li>ファイルをドロップすることで読み込ませることができます</li>
+              <li>ファイルを読み込ませる際には複数のファイルを扱うことができます</li>
+            </ul>
+          </section>
+          <section>
+            <h3>文章のペースト</h3>
+            <ul>
+              <li>テキストボックスに文章をペーストすることで読み込ませられます</li>
+            </ul>
+          </section>
+          <section>
+            <h3>全般のこと</h3>
+            <ul>
+              <li>ルビは数えません</li>
+            </ul>
+          </section>
         </section>
       </main>
       <footer id="page-footer">
