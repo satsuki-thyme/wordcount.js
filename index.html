@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>ネット小説の文字数カウンター</title>
+    <style>
+
+    </style>
+    <script src="wordcount.js"></script>
+    <script>
+      document.addEventListener(`DOMContentLoaded`, () => {
+        let elmHtml = document.querySelector(`html`)
+        let elmBody = document.querySelector(`body`)
+        let elmContainer = document.querySelector(`#container`)
+        let elmInput = document.querySelector(`#input`)
+        let elmTextarea = document.querySelector(`#textarea`)
+        let elmTableStage = document.querySelector(`#table-stage`)
+        window.ondragover = e => {
+          e.preventDefault()
+          e.stopPropagation()
+        }
+        window.ondrop = e => {
+          e.preventDefault()
+          procAll(e, `dataTransfer`)
+        }
+        elmInput.oninput = e => {
+          procAll(e, `target`)
+        }
+        elmTextarea.oninput = e => {
+          procAll(e, `value`)
+        }
+        function procAll(e, inputMethod) {
+          procWordCount(e, inputMethod)
+          .then(rly => {
+            elmTableStage.innerHTML = makeTable(rly)
+          })
+        }
+      })
+      async function procWordCount(eventInput, inputMethod) {
+        let work = []
+        let fileArray = []
+        let files = null
+        let fn = {
+          dataTransfer: e => {
+            return e.dataTransfer.files
+          },
+          target: e => {
+            return e.target.files
+          },
+          value: e => {
+            return e.value.files
+          }
+        }
+        if (inputMethod === `dataTransfer`) {
+          files = fn.dataTransfer(eventInput)
+        }
+        else if (inputMethod === `target`) {
+          files = fn.target(eventInput)
+        }
+        else if (inputMethod === `value`) {
+          return procValue(eventInput)
+        }
+        else {
+          console.error(`フェイルセーフが働きました`)
+        }
+        for (let i in files) {
+          fileArray[i] = files[i]
+        }
+        let fr = new FileReader()
+        return new Promise(resolve => {
+          let i = 0
+          fn()
+          function fn() {
+            fr.readAsText(fileArray[i])
+            fr.onload = () => {
+              wordCount(fr.result)
+              .then(rly => {
+                work[i] = [fileArray[i].name, rly]
+                discrimination()
+              })
+            }
+          }
+          function discrimination() {
+            if (i < fileArray.length - 1) {
+              i++
+              fn()
+            }
+            else {
+              resolve(work)
+            }
+          }
+        })
+        async function procValue(src) {
+          return new Promise(async resolve => {
+            resolve([[`-`].concat([await wordCount(src.target.value)])])
+          })
+        }
+      }
+      function makeTable(src) {
+        let work0 = []
+        let work1 = [`合計`, 0, 0, 0]
+        for (let i in src) {
+          let kanjiRatio = Math.round(src[i][1][1] / src[i][1][0] * 10)
+          let parenthesisRatio = Math.round(src[i][1][2] / src[i][1][0] * 10)
+          work0[i] = `<tr><td>${src[i][0]}</td><td>${src[i][1][0]}</td><td>${10 - kanjiRatio} : ${kanjiRatio}</td><td>${10 - parenthesisRatio} : ${parenthesisRatio}</td></tr>`
+          work1 = [work1[0], work1[1] + src[i][1][0], work1[2] + src[i][1][1], work1[3] + src[i][1][2]]
+        }
+        let kanjiRatioTotal = Math.round(work1[2] / work1[1] * 10)
+        let parenthesisRatioTotal = Math.round(work1[3] / work1[1] * 10)
+        let total = `<tr><td>${[work1[0]]}</td><td>${work1[1]}</td><td>${10 - kanjiRatioTotal} : ${kanjiRatioTotal}</td><td>${10 - parenthesisRatioTotal} : ${parenthesisRatioTotal}</td></tr>`
+        let thead = `<thead><tr><th>ファイル名</th><th>文字数</th><th>かな : 漢字</th><th>地文 : 台詞</th><tr></thead>`
+        let tbody = `<tbody>${work0.join(`\n`)}\n${total}</tbody>`
+        return `<table>${thead}\n${tbody}</table>`
+      }
+    </script>
+  </head>
+  <body>
+    <div id="container">
+      <header id="page-header">
+        <h1 id="page-title">ネット小説の文字数カウンター</h1>
+      </header>
+      <main>
+        <div id="input-area">
+          <input id="input" type="file" multiple>
+          <textarea id="textarea"></textarea>
+        </div>
+        <div id="table-stage"></div>
+      </main>
+      <footer id="page-footer">
+        <p id="copywrite">&copy; Satsuki Tyme</p>
+      </footer>
+    </div>
+  </body>
+</html>
