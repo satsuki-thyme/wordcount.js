@@ -287,6 +287,7 @@
             work0[i] = `<tr><td class="file-name">${src[i][0]}</td><td class="text-length">${src[i][1][0]}</td><td class="kana-kanji-ratio">${10 - kanjiRatio} : ${kanjiRatio}</td><td class="description-word-ratio">${10 - parenthesisRatio} : ${parenthesisRatio}</td></tr>`
             work1 = [work1[0], work1[1] + src[i][1][0], work1[2] + src[i][1][1], work1[3] + src[i][1][2]]
           }
+          work0.sort()
           let kanjiRatioTotal = Math.round(work1[2] / work1[1] * 10)
           let parenthesisRatioTotal = Math.round(work1[3] / work1[1] * 10)
           let total = `<tr><td class="file-name">${[work1[0]]}</td><td class="text-length">${work1[1]}</td><td class="kana-kanji-ratio">${10 - kanjiRatioTotal} : ${kanjiRatioTotal}</td><td class="description-word-ratio">${10 - parenthesisRatioTotal} : ${parenthesisRatioTotal}</td></tr>`

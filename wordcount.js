@@ -34,7 +34,13 @@ async function wordCount(srcInput, parenthesisInput) {
             &&
             inParenthesis === false
           ) {
-            discrimination()
+            if (i < singleLine.length - 1) {
+              i++
+              fn()
+            }
+            else {
+              resolve(parenthesisCount)
+            }
           }
           // 
           else if (
@@ -45,7 +51,13 @@ async function wordCount(srcInput, parenthesisInput) {
             singleLineArray[i] !== parenthesisType
           ) {
             parenthesisCount++
-            discrimination()
+            if (i < singleLine.length - 1) {
+              i++
+              fn()
+            }
+            else {
+              resolve(parenthesisCount)
+            }
           }
           // 括弧と一致しない、括弧内である、閉じ括弧と一致する
           else if (
@@ -57,7 +69,13 @@ async function wordCount(srcInput, parenthesisInput) {
           ) {
             parenthesisCount++
             inParenthesis = false
-            discrimination()
+            if (i < singleLine.length - 1) {
+              i++
+              fn()
+            }
+            else {
+              resolve(parenthesisCount)
+            }
           }
           /*
             括弧と一致する
@@ -71,7 +89,13 @@ async function wordCount(srcInput, parenthesisInput) {
             parenthesisCount++
             inParenthesis = true
             parenthesisType = parenthesisArray[Object.keys(parenthesisArray)[j]]
-            discrimination()
+            if (i < singleLine.length - 1) {
+              i++
+              fn()
+            }
+            else {
+              resolve(parenthesisCount)
+            }
           }
           // 括弧と一致する、括弧内である
           else if (
@@ -80,22 +104,25 @@ async function wordCount(srcInput, parenthesisInput) {
             inParenthesis === true
           ) {
             parenthesisCount++
-            discrimination()
+            if (i < singleLine.length - 1) {
+              i++
+              fn()
+            }
+            else {
+              resolve(parenthesisCount)
+            }
           }
           // フェイルセーフ
           else {
             console.error(`フェイルセーフが働きました`)
-            discrimination()
+            if (i < singleLine.length - 1) {
+              i++
+              fn()
+            }
+            else {
+              resolve(parenthesisCount)
+            }
           }
-        }
-      }
-      function discrimination() {
-        if (i < singleLine.length - 1) {
-          i++
-          fn()
-        }
-        else {
-          resolve(parenthesisCount)
         }
       }
     })
