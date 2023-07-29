@@ -112,9 +112,9 @@ async function wordCount(srcInput, parenthesisInput) {
               resolve(parenthesisCount)
             }
           }
-          // フェイルセーフ
+          // フールプルーフ
           else {
-            console.error(`フェイルセーフが働きました`)
+            console.error(`フールプルーフが働きました`)
             if (i < singleLine.length - 1) {
               i++
               fn()

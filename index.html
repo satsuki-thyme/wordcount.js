@@ -213,7 +213,6 @@
         }
         async function procWordCount(eventInput, inputMethod) {
           let work = []
-          let fileArray = []
           let files = null
           let fn = {
             dataTransfer: e => {
@@ -238,36 +237,29 @@
           else {
             console.error(`フェイルセーフが働きました`)
           }
-          for (let i in files) {
-            fileArray[i] = files[i]
-          }
           let fr = new FileReader()
           return new Promise(resolve => {
             let i = 0
             fn()
             function fn() {
-              fr.readAsText(fileArray[i])
+              fr.readAsText(files[i])
               fr.onload = () => {
                 wordCount(fr.result)
                 .then(rly => {
-                  work[i] = [fileArray[i].name, rly]
-                  discrimination()
+                  work[i] = [files[i].name, rly]
+                  if (i < files.length - 1) {
+                    i++
+                    fn()
+                  }
+                  else {
+                    resolve(work)
+                  }
                 })
-              }
-            }
-            function discrimination() {
-              if (i < fileArray.length - 1) {
-                i++
-                fn()
-              }
-              else {
-                resolve(work)
               }
             }
           })
           async function procValue(src) {
             return new Promise(async resolve => {
-              console.log(src.target.value)
               if (src.target.value !== ``) {
                 resolve([[`-`].concat([await wordCount(src.target.value)])])
               }
