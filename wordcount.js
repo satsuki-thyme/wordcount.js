@@ -135,9 +135,15 @@ async function wordCount(srcInput, parenthesisInput) {
   function letterLength(srcInput, periodicSymbolInput) {
     let periodicSymbol = periodicSymbolInput !== undefined ? periodicSymbolInput : ["。", "！　", "？　", "‼　", "⁉　", "❕　", "❗　", "❔　", "❓　", "!　", "\\?　"]
     let rx = new RegExp(`(?<=^|\r|\n|${periodicSymbol.join(`|`)}).+(\r|\n|${periodicSymbol.join(`|`)})`, `g`)
-    let work = srcInput
-    .match(rx)
-    .map(rly => rly.replace(/[\r\n　 \t]/g, ``).length)
-    return work.reduce((container, elemnt) => {return container + elemnt}, 0) / work.length
+    let work0 = srcInput.match(rx) || []
+    let work1 = []
+    if (work0.length > 0) {
+      work1 = work0
+      .map(rly => rly.replace(/[\r\n　 \t]/g, ``).length)
+      return work1.reduce((container, elemnt) => {return container + elemnt}, 0) / work0.length
+    }
+    else {
+      return 0
+    }
   }
 }

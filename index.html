@@ -275,10 +275,18 @@
           let work0 = []
           let work1 = {"name": "合計", "total": 0, "kanji": 0, "parenthesis": 0, "letterLength": 0}
           for (let i in src) {
-            let kanjiRatio = Math.round(src[i].kanji / src[i].total * 10)
-            let parenthesisRatio = Math.round(src[i].parenthesis / src[i].total * 10)
-            work0[i] = `<tr><td class="file-name">${src[i].name}</td><td class="text-length">${src[i].total}</td><td class="kana-kanji-ratio">${10 - kanjiRatio} : ${kanjiRatio}</td><td class="description-word-ratio">${10 - parenthesisRatio} : ${parenthesisRatio}</td><td class="letter-length">${Math.round(src[i].letterLength)}</td></tr>`
-            work1 = {"name": "合計", "total": work1.total + src[i].total, "kanji": work1.kanji + src[i].kanji, "parenthesis": work1.parenthesis + src[i].parenthesis, "letterLength": work1.letterLength + src[i].letterLength}
+            let kanjiRatio = 0
+            let parenthesisRatio = 0
+            if (src[i].total > 0) {
+              kanjiRatio = Math.round(src[i].kanji / src[i].total * 10)
+              parenthesisRatio = Math.round(src[i].parenthesis / src[i].total * 10)
+              work0[i] = `<tr><td class="file-name">${src[i].name}</td><td class="text-length">${src[i].total}</td><td class="kana-kanji-ratio">${10 - kanjiRatio} : ${kanjiRatio}</td><td class="description-word-ratio">${10 - parenthesisRatio} : ${parenthesisRatio}</td><td class="letter-length">${Math.round(src[i].letterLength)}</td></tr>`
+              work1 = {"name": "合計", "total": work1.total + src[i].total, "kanji": work1.kanji + src[i].kanji, "parenthesis": work1.parenthesis + src[i].parenthesis, "letterLength": work1.letterLength + src[i].letterLength}
+            }
+            else {
+              work0[i] = `<tr><td class="file-name">${src[i].name}</td><td class="text-length">${src[i].total}</td><td class="kana-kanji-ratio">- : -</td><td class="description-word-ratio">- : -</td><td class="letter-length">${Math.round(src[i].letterLength)}</td></tr>`
+              work1 = {"name": "合計", "total": work1.total + src[i].total, "kanji": work1.kanji + src[i].kanji, "parenthesis": work1.parenthesis + src[i].parenthesis, "letterLength": work1.letterLength + src[i].letterLength}
+            }
           }
           work0.sort()
           work1.letterLength = Math.round(work1.letterLength / src.length)
