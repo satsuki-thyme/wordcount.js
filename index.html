@@ -260,17 +260,6 @@
               }
             }
           })
-          async function procValue(src) {
-            return new Promise(async resolve => {
-              if (src.target.value !== ``) {
-                resolve([[`-`].concat([await wordcount(src.target.value)])])
-              }
-              else {
-                elmTableStage.innerHTML = ``
-                return false
-              }
-            })
-          }
         }
         function makeTable(src) {
           let w0 = []
