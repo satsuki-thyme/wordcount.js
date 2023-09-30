@@ -207,13 +207,13 @@
           procAll(e, `value`)
         }
         function procAll(e, inputMethod) {
-          procWordCount(e, inputMethod)
+          wordCountWrapper(e, inputMethod)
           .then(rly => {
             elmTableStage.innerHTML = makeTable(rly)
           })
         }
-        async function procWordCount(eventInput, inputMethod) {
-          let work = []
+        async function wordCountWrapper(eventInput, inputMethod) {
+          let w = []
           let files = null
           let fn = {
             dataTransfer: e => {
@@ -222,8 +222,9 @@
             target: e => {
               return e.target.files
             },
-            value: e => {
-              return e.value.files
+            value: async () => {
+              let w = await wordCount(elmTextarea.value)
+              return [Object.assign({"name": "-"}, w)]
             }
           }
           if (inputMethod === `dataTransfer`) {
@@ -233,7 +234,7 @@
             files = fn.target(eventInput)
           }
           else if (inputMethod === `value`) {
-            return procValue(eventInput)
+            return fn.value()
           }
           else {
             console.error(`フェイルセーフが働きました`)
@@ -247,13 +248,13 @@
               fr.onload = () => {
                 wordCount(fr.result)
                 .then(rly => {
-                  work[i] = Object.assign({"name": files[i].name}, rly)
+                  w[i] = Object.assign({"name": files[i].name}, rly)
                   if (i < files.length - 1) {
                     i++
                     fn()
                   }
                   else {
-                    resolve(work)
+                    resolve(w)
                   }
                 })
               }
@@ -272,29 +273,29 @@
           }
         }
         function makeTable(src) {
-          let work0 = []
-          let work1 = {"name": "合計", "total": 0, "kanji": 0, "parenthesis": 0, "letterLength": 0}
+          let w0 = []
+          let w1 = {"name": "合計", "total": 0, "kanji": 0, "parenthesis": 0, "letterLength": 0}
           for (let i in src) {
             let kanjiRatio = 0
             let parenthesisRatio = 0
             if (src[i].total > 0) {
               kanjiRatio = Math.round(src[i].kanji / src[i].total * 10)
               parenthesisRatio = Math.round(src[i].parenthesis / src[i].total * 10)
-              work0[i] = `<tr><td class="file-name">${src[i].name}</td><td class="text-length">${src[i].total}</td><td class="kana-kanji-ratio">${10 - kanjiRatio} : ${kanjiRatio}</td><td class="description-word-ratio">${10 - parenthesisRatio} : ${parenthesisRatio}</td><td class="letter-length">${Math.round(src[i].letterLength)}</td></tr>`
-              work1 = {"name": "合計", "total": work1.total + src[i].total, "kanji": work1.kanji + src[i].kanji, "parenthesis": work1.parenthesis + src[i].parenthesis, "letterLength": work1.letterLength + src[i].letterLength}
+              w0[i] = `<tr><td class="file-name">${src[i].name}</td><td class="text-length">${src[i].total}</td><td class="kana-kanji-ratio">${10 - kanjiRatio} : ${kanjiRatio}</td><td class="description-word-ratio">${10 - parenthesisRatio} : ${parenthesisRatio}</td><td class="letter-length">${Math.round(src[i].letterLength)}</td></tr>`
+              w1 = {"name": "合計", "total": w1.total + src[i].total, "kanji": w1.kanji + src[i].kanji, "parenthesis": w1.parenthesis + src[i].parenthesis, "letterLength": w1.letterLength + src[i].letterLength}
             }
             else {
-              work0[i] = `<tr><td class="file-name">${src[i].name}</td><td class="text-length">${src[i].total}</td><td class="kana-kanji-ratio">- : -</td><td class="description-word-ratio">- : -</td><td class="letter-length">${Math.round(src[i].letterLength)}</td></tr>`
-              work1 = {"name": "合計", "total": work1.total + src[i].total, "kanji": work1.kanji + src[i].kanji, "parenthesis": work1.parenthesis + src[i].parenthesis, "letterLength": work1.letterLength + src[i].letterLength}
+              w0[i] = `<tr><td class="file-name">${src[i].name}</td><td class="text-length">${src[i].total}</td><td class="kana-kanji-ratio">- : -</td><td class="description-word-ratio">- : -</td><td class="letter-length">${Math.round(src[i].letterLength)}</td></tr>`
+              w1 = {"name": "合計", "total": w1.total + src[i].total, "kanji": w1.kanji + src[i].kanji, "parenthesis": w1.parenthesis + src[i].parenthesis, "letterLength": w1.letterLength + src[i].letterLength}
             }
           }
-          work0.sort()
-          work1.letterLength = Math.round(work1.letterLength / src.length)
-          let kanjiRatioTotal = Math.round(work1.kanji / work1.total * 10)
-          let parenthesisRatioTotal = Math.round(work1.parenthesis / work1.total * 10)
-          let total = `<tr><td class="file-name">${[work1.name]}</td><td class="text-length">${work1.total}</td><td class="kana-kanji-ratio">${10 - kanjiRatioTotal} : ${kanjiRatioTotal}</td><td class="description-word-ratio">${10 - parenthesisRatioTotal} : ${parenthesisRatioTotal}</td><td class="letter-length">${work1.letterLength}</td></tr>`
+          w0.sort()
+          w1.letterLength = Math.round(w1.letterLength / src.length)
+          let kanjiRatioTotal = Math.round(w1.kanji / w1.total * 10)
+          let parenthesisRatioTotal = Math.round(w1.parenthesis / w1.total * 10)
+          let total = `<tr><td class="file-name">${[w1.name]}</td><td class="text-length">${w1.total}</td><td class="kana-kanji-ratio">${10 - kanjiRatioTotal} : ${kanjiRatioTotal}</td><td class="description-word-ratio">${10 - parenthesisRatioTotal} : ${parenthesisRatioTotal}</td><td class="letter-length">${w1.letterLength}</td></tr>`
           let thead = `<thead><tr><th class="file-name">ファイル名</th><th class="text-length">文字数</th><th class="kana-kanji-ratio">かな : 漢字</th><th class="description-word-ratio">地文 : 台詞</th><th class="letter-length">平均文長</th></tr></thead>`
-          let tbody = `<tbody>${work0.join(`\n`)}\n${total}</tbody>`
+          let tbody = `<tbody>${w0.join(`\n`)}\n${total}</tbody>`
           return `<table>${thead}\n${tbody}</table>`
         }
       })
