@@ -207,12 +207,12 @@
           procAll(e, `value`)
         }
         function procAll(e, inputMethod) {
-          wordCountWrapper(e, inputMethod)
+          wordcountWrapper(e, inputMethod)
           .then(rly => {
             elmTableStage.innerHTML = makeTable(rly)
           })
         }
-        async function wordCountWrapper(eventInput, inputMethod) {
+        async function wordcountWrapper(eventInput, inputMethod) {
           let w = []
           let files = null
           let fn = {
@@ -223,7 +223,7 @@
               return e.target.files
             },
             value: async () => {
-              let w = await wordCount(elmTextarea.value)
+              let w = await wordcount(elmTextarea.value)
               return [Object.assign({"name": "-"}, w)]
             }
           }
@@ -246,7 +246,7 @@
             function fn() {
               fr.readAsText(files[i])
               fr.onload = () => {
-                wordCount(fr.result)
+                wordcount(fr.result)
                 .then(rly => {
                   w[i] = Object.assign({"name": files[i].name}, rly)
                   if (i < files.length - 1) {
@@ -263,7 +263,7 @@
           async function procValue(src) {
             return new Promise(async resolve => {
               if (src.target.value !== ``) {
-                resolve([[`-`].concat([await wordCount(src.target.value)])])
+                resolve([[`-`].concat([await wordcount(src.target.value)])])
               }
               else {
                 elmTableStage.innerHTML = ``

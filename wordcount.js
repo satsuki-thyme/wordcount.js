@@ -1,4 +1,4 @@
-async function wordCount(srcInput, periodicSymbolInput, parenthesisInput) {
+async function wordcount(srcInput, periodicSymbolInput, parenthesisInput) {
   let kanjiSet = `[々〇〻\u3400-\u9FFF\uF900-\uFAFF\uD840-\uD87F\uDC00-\uDFFF]`
   let kanaSet = `[\u3040-\u309F\u30A0-\u30FF]`
   let periodicSymbol = periodicSymbolInput || ["。", "！　", "？　", "‼　", "⁉　", "❕　", "❗　", "❔　", "❓　", "!　", "\\?　"]
