@@ -2,16 +2,13 @@ async function wordcount(srcInput, periodicSymbolInput, parenthesisInput) {
   let kanjiSet = `[々〇〻\u3400-\u9FFF\uF900-\uFAFF\uD840-\uD87F\uDC00-\uDFFF]`
   let kanaSet = `[\u3040-\u309F\u30A0-\u30FF]`
   let periodicSymbol = periodicSymbolInput || ["。", "！　", "？　", "‼　", "⁉　", "❕　", "❗　", "❔　", "❓　", "!　", "\\?　"]
-  let parenthesisArray = parenthesisInput || {"「": "」", "『": "』", "（": "）"}
+  let parenthesisArray = parenthesisInput || [["「", "」"], ["『", "』"], ["（", "）"]]
   let noRubyText = removeRuby(srcInput)
   let singleLine = noRubyText.replace(/[\r\n　 \t]/g, ``)
   let totalCount = singleLine.length
   let kanjiExist = new RegExp(`${kanjiSet}`).test(singleLine) ? true : false
   let kanjiCount = kanjiExist === true ? singleLine.match(new RegExp(`${kanjiSet}`, `g`)).join(``).length : 0
-  return countParenthesis(singleLine, parenthesisArray)
-  .then(rly => {
-    return {"total": totalCount, "kanji": kanjiCount, "parenthesis": rly, "letterLength": letterLength(noRubyText)}
-  })
+  return {"total": totalCount, "kanji": kanjiCount, "parenthesis": countParenthesis(), "letterLength": letterLength(noRubyText)}
   function removeRuby(srcInput) {
     return srcInput
     .replace(/[|｜](.+?)《(.+?)》/g, `$1`)
@@ -21,117 +18,13 @@ async function wordcount(srcInput, periodicSymbolInput, parenthesisInput) {
     .replace(/[|｜]([《\(（])(.+?)([》\)）])/g, `$1$2$3`)
     .replace(/#(.+?)__(.+?)__#/g, `$1`)
   }
-  async function countParenthesis(singleLine, parenthesisArray) {
-    return new Promise(resolve => {
-      let parenthesisCount = 0
-      let i = 0
-      let inParenthesis = false
-      let parenthesisType = ``
-      let singleLineArray = singleLine.split(``)
-      fn()
-      function fn() {
-        for (let j = 0; j < Object.keys(parenthesisArray).length - 1; j++) {
-          /*
-            括弧と一致しない
-          */
-          // 括弧と一致しない、括弧内ではない
-          if (
-            singleLineArray[i] !== Object.keys(parenthesisArray)[j]
-            &&
-            inParenthesis === false
-          ) {
-            if (i < singleLine.length - 1) {
-              i++
-              fn()
-            }
-            else {
-              resolve(parenthesisCount)
-            }
-          }
-          // 
-          else if (
-            singleLineArray[i] !== Object.keys(parenthesisArray)[j]
-            &&
-            inParenthesis === true
-            &&
-            singleLineArray[i] !== parenthesisType
-          ) {
-            parenthesisCount++
-            if (i < singleLine.length - 1) {
-              i++
-              fn()
-            }
-            else {
-              resolve(parenthesisCount)
-            }
-          }
-          // 括弧と一致しない、括弧内である、閉じ括弧と一致する
-          else if (
-            singleLineArray[i] !== Object.keys(parenthesisArray)[j]
-            &&
-            inParenthesis === true
-            &&
-            singleLineArray[i] === parenthesisType
-          ) {
-            parenthesisCount++
-            inParenthesis = false
-            if (i < singleLine.length - 1) {
-              i++
-              fn()
-            }
-            else {
-              resolve(parenthesisCount)
-            }
-          }
-          /*
-            括弧と一致する
-          */
-          // 括弧と一致する、括弧内ではない
-          else if (
-            singleLineArray[i] === Object.keys(parenthesisArray)[j]
-            &&
-            inParenthesis === false
-          ) {
-            parenthesisCount++
-            inParenthesis = true
-            parenthesisType = parenthesisArray[Object.keys(parenthesisArray)[j]]
-            if (i < singleLine.length - 1) {
-              i++
-              fn()
-            }
-            else {
-              resolve(parenthesisCount)
-            }
-          }
-          // 括弧と一致する、括弧内である
-          else if (
-            singleLineArray[i] === Object.keys(parenthesisArray)[j]
-            &&
-            inParenthesis === true
-          ) {
-            parenthesisCount++
-            if (i < singleLine.length - 1) {
-              i++
-              fn()
-            }
-            else {
-              resolve(parenthesisCount)
-            }
-          }
-          // フールプルーフ
-          else {
-            console.error(`フールプルーフが働きました`)
-            if (i < singleLine.length - 1) {
-              i++
-              fn()
-            }
-            else {
-              resolve(parenthesisCount)
-            }
-          }
-        }
-      }
-    })
+  function countParenthesis() {
+    let len = 0
+    for (let val of parenthesisArray) {
+      let re = new RegExp(`${val[0]}.*?${val[1]}`, `g`)
+      len += (singleLine.match(re) || [``]).join(``).length
+    }
+    return len
   }
   function letterLength(srcInput) {
     let rx = new RegExp(`(?<=^|\r|\n|${periodicSymbol.join(`|`)}).+(\r|\n|${periodicSymbol.join(`|`)})`, `g`)
