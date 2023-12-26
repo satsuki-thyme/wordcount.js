@@ -33,7 +33,7 @@ async function wordcount(srcInput, periodicSymbolInput, parenthesisInput) {
     if (w0.length > 0) {
       w1 = w0
       .map(rly => rly.replace(/[\r\n　 \t]/g, ``).length)
-      return w1.reduce((container, elemnt) => {return container + elemnt}, 0) / w0.length
+      return w1.reduce((container, elemnt) => container + elemnt, 0) / w0.length
     }
     else {
       return 0
