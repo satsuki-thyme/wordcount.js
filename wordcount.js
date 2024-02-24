@@ -3,13 +3,13 @@ async function wordcount(srcInput, periodicSymbolInput, parenthesisInput) {
   let kanaSet = `[\u3040-\u309F\u30A0-\u30FF]`
   let periodicSymbol = periodicSymbolInput || ["。", "！　", "？　", "‼　", "⁉　", "❕　", "❗　", "❔　", "❓　", "!　", "\\?　"]
   let parenthesisArray = parenthesisInput || [["「", "」"], ["『", "』"], ["（", "）"]]
-  let noRubyText = removeRuby(srcInput)
+  let noRubyText = await removeRuby(srcInput)
   let singleLine = noRubyText.replace(/[\r\n　 \t]/g, ``)
   let totalCount = singleLine.length
   let kanjiExist = new RegExp(`${kanjiSet}`).test(singleLine) ? true : false
   let kanjiCount = kanjiExist === true ? singleLine.match(new RegExp(`${kanjiSet}`, `g`)).join(``).length : 0
-  return {"total": totalCount, "kanji": kanjiCount, "parenthesis": countParenthesis(), "letterLength": letterLength(noRubyText)}
-  function removeRuby(srcInput) {
+  return {"total": totalCount, "kanji": kanjiCount, "parenthesis": await countParenthesis(), "letterLength": await letterLength(noRubyText)}
+  async function removeRuby(srcInput) {
     return srcInput
     .replace(/[|｜](.+?)《(.+?)》/g, `$1`)
     .replace(new RegExp(`[｜|](.+?)《(.+?)》`, `g`), `$1`)
@@ -18,7 +18,7 @@ async function wordcount(srcInput, periodicSymbolInput, parenthesisInput) {
     .replace(/[|｜]([《\(（])(.+?)([》\)）])/g, `$1$2$3`)
     .replace(/#(.+?)__(.+?)__#/g, `$1`)
   }
-  function countParenthesis() {
+  async function countParenthesis() {
     let len = 0
     for (let val of parenthesisArray) {
       let re = new RegExp(`${val[0]}.*?${val[1]}`, `g`)
@@ -26,7 +26,7 @@ async function wordcount(srcInput, periodicSymbolInput, parenthesisInput) {
     }
     return len
   }
-  function letterLength(srcInput) {
+  async function letterLength(srcInput) {
     let rx = new RegExp(`(?<=^|\r|\n|${periodicSymbol.join(`|`)}).+(\r|\n|${periodicSymbol.join(`|`)})`, `g`)
     let w0 = srcInput.match(rx) || []
     let w1 = []
