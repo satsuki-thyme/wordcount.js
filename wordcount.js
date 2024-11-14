@@ -25,13 +25,14 @@ async function wordcount(srcInput, periodicSymbolInput, parenthesisInput) {
     return len
   }
   async function letterLength(srcInput) {
-    let rx = new RegExp(`(?<=^|\r|\n|${periodicSymbol.join(`|`)}).+(\r|\n|${periodicSymbol.join(`|`)})`, `g`)
-    let w0 = srcInput.match(rx) || []
+    let w0 = srcInput
+    .split(new RegExp(`${periodicSymbol.join(`|`)}|${parenthesisArray.map(e => e.join(`|`)).join(`|`)}`))
+    .filter(e => !/^$/.test(e))
     let w1 = []
     if (w0.length > 0) {
       w1 = w0
       .map(rly => rly.replace(/[\r\n　 \t]/g, ``).length)
-      return w1.reduce((container, elemnt) => container + elemnt, 0) / w0.length
+      return w1.reduce((a, c) => a + c, 0) / w0.length
     }
     else {
       return 0
