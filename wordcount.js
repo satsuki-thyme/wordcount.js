@@ -4,15 +4,15 @@ async function wordcount(srcInput, periodicSymbolInput, parenthesisInput) {
   let noRubyText = await removeRuby(srcInput)
   let singleLine = noRubyText.replace(/[\r\n　 \t]/g, ``)
   let totalCount = singleLine.length
-  let kanjiExist = /(?![「」『』【】《》〈〉〔〕〘〙〖〗。、・々〆〃—〜〄〇〓])\p{scx=Han}/u.test(singleLine) ? true : false
-  let kanjiCount = kanjiExist === true ? singleLine.match(/(?![「」『』【】《》〈〉〔〕〘〙〖〗。、・々〆〃—〜〄〇〓])\p{scx=Han}/ug).join(``).length : 0
+  let kanjiExist = /(?![〜、。〈〉《》「」『』【】〔〕〖〗〘〙〃〆・〓])\p{scx=Han}/u.test(singleLine) ? true : false
+  let kanjiCount = kanjiExist === true ? singleLine.match(/(?![〜、。〈〉《》「」『』【】〔〕〖〗〘〙〃〆・〓])\p{scx=Han}/ug).join(``).length : 0
   return {"total": totalCount, "kanji": kanjiCount, "parenthesis": await countParenthesis(), "letterLength": await letterLength(noRubyText)}
   async function removeRuby(srcInput) {
     return srcInput
     .replace(/[|｜](.+?)《(.+?)》/g, `$1`)
     .replace(new RegExp(`[｜|](.+?)《(.+?)》`, `g`), `$1`)
     .replace(/[｜|](.+?)\((\p{scx=Hira}|\p{scx=Kana})\)/ug, `$1`)
-    .replace(/((?![「」『』【】《》〈〉〔〕〘〙〖〗。、・々〆〃—〜〄〇〓])\p{scx=Han}+)（(\p{scx=Hira}|\p{scx=Kana})+）/ug, `$1`)
+    .replace(/((?![〜、。〈〉《》「」『』【】〔〕〖〗〘〙〃〆・〓])\p{scx=Han}+)（(\p{scx=Hira}|\p{scx=Kana})+）/ug, `$1`)
     .replace(/[|｜]([《\(（])(.+?)([》\)）])/g, `$1$2$3`)
     .replace(/#(.+?)__(.+?)__#/g, `$1`)
   }
